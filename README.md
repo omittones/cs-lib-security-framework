@@ -2,7 +2,7 @@ Security framework example
 ==========================
 
 A framework for checking user permissions on actions that can be performed on 
-domain objects (Invoice and InvoiceItem).
+domain objects (Invoice and InvoiceItem, in *Domain* folder).
 
 If the the action for domain object is allowed for that user, a placeholder 
 which invokes the action is rendered (HTML button).
