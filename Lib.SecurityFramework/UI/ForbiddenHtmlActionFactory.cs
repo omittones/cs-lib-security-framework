@@ -6,14 +6,14 @@ namespace Lib.SecurityFramework.UI
     {
         private class ForbiddenHtmlFormat : HtmlFormat
         {
-            public override string RenderAsImage()
+            public override string RenderAsImage(string src)
             {
-                return "<span>Forbidden!</span>";
+                return "<img class=\"disabled\" src=\"" + src + "\" />";
             }
 
-            public override string RenderWithText(string text)
+            public override string RenderAsButton(string text)
             {
-                return "<span>" + text + "</span>";
+                return "<span class=\"disabled button\">" + text + "</span>";
             }
         }
 
