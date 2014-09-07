@@ -61,7 +61,7 @@
     <Compile Include="Domain\InvoiceStatus.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Framework\Action.cs" />
+    <Compile Include="Framework\ActionPlaceholder.cs" />
     <Compile Include="Framework\SecurityCheckResult.cs" />
     <Compile Include="Domain\Security\DatabaseUserPermissionsChecker.cs" />
   </ItemGroup>
