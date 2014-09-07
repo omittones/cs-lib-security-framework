@@ -1,0 +1,84 @@
+using System.Collections.Generic;
+using Lib.SecurityFramework.Framework;
+using Lib.SecurityFramework.Domain.Actions;
+namespace Lib.SecurityFramework.Domain.Security
+{
+    public class DatabaseUserPermissionsChecker : IActions<SecurityCheckResult>
+    {
+        public virtual IContext Context { get; set; }
+
+        private readonly DomainObjects domainObject;
+
+        protected DatabaseUserPermissionsChecker(DomainObjects domainObject)
+        {
+            this.domainObject = domainObject;
+        }
+
+        protected SecurityCheckResult Ok()
+        {
+            return Result(true);
+        }
+
+        protected SecurityCheckResult Result(bool result)
+        {
+            return new SecurityCheckResult(result);
+        }
+
+        protected SecurityCheckResult Fail()
+        {
+            return Result(false);
+        }
+
+        public virtual SecurityCheckResult Create()
+        {
+            if (UserHasPermission(CRUD.Create))
+                return Ok();
+            else
+                return Fail();
+        }
+
+        public virtual SecurityCheckResult Read()
+        {
+            if (UserHasPermission(CRUD.Read))
+                return Ok();
+            else
+                return Fail();
+        }
+
+        public virtual SecurityCheckResult Update()
+        {
+            if (UserHasPermission(CRUD.Update))
+                return Ok();
+            else
+                return Fail();
+        }
+
+        public virtual SecurityCheckResult Delete()
+        {
+            if (UserHasPermission(CRUD.Delete))
+                return Ok();
+            else
+                return Fail();
+        }
+
+        private bool UserHasPermission(CRUD operation)
+        {
+            //go to database and collect user permissions
+
+            var permissions = new Dictionary<DomainObjects, List<CRUD>>();
+
+            permissions.Add(DomainObjects.Invoice, new List<CRUD>());
+            permissions[DomainObjects.Invoice].Add(CRUD.Read);
+
+            permissions.Add(DomainObjects.InvoiceItem, new List<CRUD>());
+            permissions[DomainObjects.InvoiceItem].Add(CRUD.Create);
+            permissions[DomainObjects.InvoiceItem].Add(CRUD.Read);
+            permissions[DomainObjects.InvoiceItem].Add(CRUD.Update);
+            permissions[DomainObjects.InvoiceItem].Add(CRUD.Delete);
+            
+            return this.Context.UserID == 1 &&
+                   permissions.ContainsKey(domainObject) &&
+                   permissions[domainObject].Contains(operation);
+        }
+    }
+}
