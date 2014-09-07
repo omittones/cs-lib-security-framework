@@ -1,4 +1,5 @@
 using System;
+using Autofac;
 using Lib.SecurityFramework.Domain.Actions;
 using Lib.SecurityFramework.Framework;
 
@@ -7,6 +8,18 @@ namespace Lib.SecurityFramework.Domain.Security
     public class PlaceholderFactory<TFormat> : BasePlaceholderFactory<TFormat>
         where TFormat : class, IActionFormat
     {
+        private readonly ILifetimeScope scope;
+
+        public PlaceholderFactory(ILifetimeScope scope)
+        {
+            this.scope = scope;
+        }
+
+        protected override T ResolveViaDependencyController<T>()
+        {
+            return this.scope.Resolve<T>();
+        }
+
         public TFormat ForInvoice(IContext context, Invoice invoice,
             Func<IInvoiceActions<object>, Func<object>> actionSelector)
         {

@@ -4,7 +4,7 @@ using Lib.SecurityFramework.Domain.Security;
 
 namespace Lib.SecurityFramework.UI
 {
-    public class InvoiceAjaxActions : IInvoiceActions<AjaxFormat>
+    public class InvoiceHtmlActions : IInvoiceActions<HtmlFormat>
     {
         public IContext Context { get; set; }
 
@@ -15,81 +15,82 @@ namespace Lib.SecurityFramework.UI
             get { return Invoice.InvoiceID; }
         }
 
-        public AjaxFormat Create()
+        public HtmlFormat Create()
         {
-            return new AjaxFormat
+            return new HtmlFormat
             {
                 Controller = "Invoice",
-                Action = "AjaxUpsert"
+                Action = "HtmlUpsert",
+                RouteValues = new { parentId = Context.CompanyID }
             };
         }
 
-        public AjaxFormat Read()
+        public HtmlFormat Read()
         {
-            return new AjaxFormat
+            return new HtmlFormat
             {
                 Controller = "Invoice",
-                Action = "AjaxGet",
+                Action = "HtmlGet",
                 RouteValues = new { entityId = InvoiceID }
             };
         }
 
-        public AjaxFormat Update()
+        public HtmlFormat Update()
         {
-            return new AjaxFormat
+            return new HtmlFormat
             {
                 Controller = "Invoice",
-                Action = "AjaxUpsert",
+                Action = "HtmlUpsert",
                 RouteValues = new { entityId = InvoiceID }
             };
         }
 
-        public AjaxFormat Delete()
+        public HtmlFormat Delete()
         {
-            return new AjaxFormat
+            return new HtmlFormat
             {
                 Controller = "Invoice",
-                Action = "AjaxDelete",
+                Action = "HtmlDelete",
                 RouteValues = new { entityId = InvoiceID }
             };
         }
 
-        public AjaxFormat Publish()
+        public HtmlFormat Publish()
         {
-            return new AjaxFormat
+            return new HtmlFormat
             {
                 Controller = "Invoice",
-                Action = "AjaxPublish",
+                Action = "HtmlPublish",
                 RouteValues = new { entityId = InvoiceID }
             };
         }
 
-        public AjaxFormat Unpublish()
+        public HtmlFormat Unpublish()
         {
-            return new AjaxFormat
+            return new HtmlFormat
             {
                 Controller = "Invoice",
-                Action = "AjaxUnpublish",
+                Action = "HtmlUnpublish",
                 RouteValues = new { entityId = InvoiceID }
             };
         }
 
-        public AjaxFormat Send()
+        public HtmlFormat Send()
         {
-            return new AjaxFormat
+            return new HtmlFormat
             {
                 Controller = "Invoice",
-                Action = "AjaxSend",
+                Action = "HtmlSend",
                 RouteValues = new { entityId = InvoiceID }
             };
         }
 
-        public AjaxFormat Cancel()
+        public HtmlFormat Cancel()
         {
-            return new AjaxFormat
+            return new HtmlFormat
             {
                 Controller = "Invoice",
-                Action = "AjaxCancel",
+                Action = "HtmlCancel",
                 RouteValues = new { entityId = InvoiceID }
             };
         }

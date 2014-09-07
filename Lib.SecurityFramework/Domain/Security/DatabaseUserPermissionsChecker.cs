@@ -69,6 +69,7 @@ namespace Lib.SecurityFramework.Domain.Security
 
             permissions.Add(DomainObjects.Invoice, new List<CRUD>());
             permissions[DomainObjects.Invoice].Add(CRUD.Read);
+            permissions[DomainObjects.Invoice].Add(CRUD.Update);
 
             permissions.Add(DomainObjects.InvoiceItem, new List<CRUD>());
             permissions[DomainObjects.InvoiceItem].Add(CRUD.Create);

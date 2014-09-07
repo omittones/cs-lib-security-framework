@@ -2,7 +2,7 @@ using Lib.SecurityFramework.Framework;
 
 namespace Lib.SecurityFramework.UI
 {
-    public class AjaxFormat : IActionFormat
+    public class HtmlFormat : IActionFormat
     {
         public string Controller { get; set; }
         public string Action { get; set; }
@@ -10,12 +10,12 @@ namespace Lib.SecurityFramework.UI
 
         public virtual string RenderWithText(string text)
         {
-            return text;
+            return "<button>" + text + "</button>";
         }
 
         public virtual string RenderAsImage()
         {
-            return string.Empty;
+            return "<img/>";
         }
     }
 }

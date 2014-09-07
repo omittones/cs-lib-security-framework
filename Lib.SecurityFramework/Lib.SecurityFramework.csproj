@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac">
+      <HintPath>packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -52,10 +55,11 @@
     <Compile Include="Domain\Actions\IInvoiceActions.cs" />
     <Compile Include="Domain\Actions\IInvoiceItemActions.cs" />
     <Compile Include="Domain\Security\PlaceholderFactory.cs" />
-    <Compile Include="UI\MvcActionLinkPlaceholder.cs" />
+    <Compile Include="UI\InvoiceItemHtmlActions.cs" />
+    <Compile Include="UI\HtmlFormat.cs" />
     <Compile Include="Domain\Invoice.cs" />
-    <Compile Include="UI\ForbiddenAjaxActionFactory.cs" />
-    <Compile Include="UI\InvoiceAjaxActions.cs" />
+    <Compile Include="UI\ForbiddenHtmlActionFactory.cs" />
+    <Compile Include="UI\InvoiceHtmlActions.cs" />
     <Compile Include="Domain\InvoiceItem.cs" />
     <Compile Include="Domain\Security\InvoiceSecurityChecker.cs" />
     <Compile Include="Domain\InvoiceStatus.cs" />
@@ -67,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

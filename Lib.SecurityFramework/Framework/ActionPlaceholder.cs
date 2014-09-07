@@ -1,13 +1,21 @@
+using Autofac;
 using Lib.SecurityFramework.Domain.Security;
 
 namespace Lib.SecurityFramework.Framework
 {
-    public static class ActionPlaceholder
+    public class ActionPlaceholder
     {
-        public static PlaceholderFactory<TFormat> With<TFormat>()
+        private readonly ILifetimeScope scope;
+
+        public ActionPlaceholder(ILifetimeScope scope)
+        {
+            this.scope = scope;
+        }
+
+        public PlaceholderFactory<TFormat> With<TFormat>()
             where TFormat : class, IActionFormat
         {
-            return new PlaceholderFactory<TFormat>();
+            return new PlaceholderFactory<TFormat>(this.scope);
         }
     }
 }
