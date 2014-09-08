@@ -3,11 +3,11 @@ using Lib.SecurityFramework.Domain.Security;
 
 namespace Lib.SecurityFramework.Framework
 {
-    public class ActionPlaceholder
+    public class ActionPlaceholdersFactory
     {
         private readonly ILifetimeScope scope;
 
-        public ActionPlaceholder(ILifetimeScope scope)
+        public ActionPlaceholdersFactory(ILifetimeScope scope)
         {
             this.scope = scope;
         }

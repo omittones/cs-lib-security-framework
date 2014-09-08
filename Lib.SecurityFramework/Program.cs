@@ -29,22 +29,22 @@ namespace Lib.SecurityFramework
             using (var container = builder.Build())
             using (var scope = container.BeginLifetimeScope())
             {
-                var placeholder = new ActionPlaceholder(scope);
+                var placeholders = new ActionPlaceholdersFactory(scope);
 
                 IContext context = new FakeContext();
                 Invoice invoice = new Invoice { CompanyID = 1, InvoiceID = 1, Status = InvoiceStatus.Draft };
                 InvoiceItem invoiceItem = new InvoiceItem { InvoiceID = 1, InvoiceItemID = 1 };
 
-                var invoiceActions = placeholder.With<HtmlFormat>().ForInvoice(context, invoice);
+                var invoiceAction = placeholders.With<HtmlFormat>().ForInvoice(context, invoice);
 
-                invoiceActions(a => a.Create).RenderAsButton("Add new invoice").WriteLine();
-                invoiceActions(a => a.Delete).RenderAsButton("Delete invoice").WriteLine();
-                invoiceActions(a => a.Publish).RenderAsButton("Publish invoice").WriteLine();
+                invoiceAction(a => a.Create).RenderAsButton("Add new invoice").WriteLine();
+                invoiceAction(a => a.Delete).RenderAsButton("Delete invoice").WriteLine();
+                invoiceAction(a => a.Publish).RenderAsButton("Publish invoice").WriteLine();
 
-                var invoiceItemActions = placeholder.With<HtmlFormat>().ForInvoiceItem(context, invoiceItem);
+                var invoiceItemAction = placeholders.With<HtmlFormat>().ForInvoiceItem(context, invoiceItem);
 
-                invoiceItemActions(a => a.RemoveVAT).RenderAsImage("minus.png").WriteLine();
-                invoiceItemActions(a => a.SetPrice).RenderAsImage("dollar.png").WriteLine();
+                invoiceItemAction(a => a.RemoveVAT).RenderAsImage("minus.png").WriteLine();
+                invoiceItemAction(a => a.SetPrice).RenderAsImage("dollar.png").WriteLine();
             }
         }
     }
