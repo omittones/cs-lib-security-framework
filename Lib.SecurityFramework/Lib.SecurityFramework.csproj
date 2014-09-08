@@ -54,7 +54,7 @@
     <Compile Include="Framework\IForbiddenActionFactory.cs" />
     <Compile Include="Domain\Actions\IInvoiceActions.cs" />
     <Compile Include="Domain\Actions\IInvoiceItemActions.cs" />
-    <Compile Include="Domain\Security\PlaceholderFactory.cs" />
+    <Compile Include="UI\FormattedPlaceholderFactory.cs" />
     <Compile Include="UI\InvoiceItemHtmlActions.cs" />
     <Compile Include="UI\HtmlFormat.cs" />
     <Compile Include="Domain\Invoice.cs" />
@@ -65,7 +65,7 @@
     <Compile Include="Domain\InvoiceStatus.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Framework\ActionPlaceholdersFactory.cs" />
+    <Compile Include="UI\PlaceholderFactory.cs" />
     <Compile Include="Framework\SecurityCheckResult.cs" />
     <Compile Include="Domain\Security\DatabaseUserPermissionsChecker.cs" />
   </ItemGroup>

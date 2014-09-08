@@ -29,7 +29,7 @@ namespace Lib.SecurityFramework
             using (var container = builder.Build())
             using (var scope = container.BeginLifetimeScope())
             {
-                var placeholders = new ActionPlaceholdersFactory(scope);
+                var placeholders = new PlaceholderFactory(scope);
 
                 IContext context = new FakeContext();
                 Invoice invoice = new Invoice { CompanyID = 1, InvoiceID = 1, Status = InvoiceStatus.Draft };

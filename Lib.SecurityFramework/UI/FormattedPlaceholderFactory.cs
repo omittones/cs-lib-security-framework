@@ -1,16 +1,17 @@
 using System;
 using Autofac;
+using Lib.SecurityFramework.Domain;
 using Lib.SecurityFramework.Domain.Actions;
 using Lib.SecurityFramework.Framework;
 
-namespace Lib.SecurityFramework.Domain.Security
+namespace Lib.SecurityFramework.UI
 {
-    public class PlaceholderFactory<TFormat>
+    public class FormattedPlaceholderFactory<TFormat>
         where TFormat : class, IActionFormat
     {
         private readonly ILifetimeScope scope;
 
-        public PlaceholderFactory(ILifetimeScope scope)
+        public FormattedPlaceholderFactory(ILifetimeScope scope)
         {
             this.scope = scope;
         }

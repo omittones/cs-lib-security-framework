@@ -3,13 +3,13 @@ using Autofac;
 
 namespace Lib.SecurityFramework.Framework
 {
-    public class PlaceholderForActions<TFormat, TSecInterface, TResInterface, TCommonInterface>
-        where TSecInterface : TCommonInterface
-        where TResInterface : TCommonInterface
+    public class PlaceholderForActions<TFormat, TSecurityCheckInterface, TActionGeneratorInterface, TCommonInterface>
+        where TSecurityCheckInterface : TCommonInterface
+        where TActionGeneratorInterface : TCommonInterface
     {
         private readonly ILifetimeScope scope;
         private readonly Action<TCommonInterface> initalize;
-        private readonly TSecInterface securityChecker;
+        private readonly TSecurityCheckInterface securityChecker;
         private readonly TCommonInterface actionFactory;
 
         public PlaceholderForActions(ILifetimeScope scope, Action<TCommonInterface> initialize)
@@ -17,8 +17,8 @@ namespace Lib.SecurityFramework.Framework
             this.scope = scope;
             this.initalize = initialize;
 
-            this.securityChecker = ResolveViaDependencyController<TSecInterface>();
-            this.actionFactory = ResolveViaDependencyController<TResInterface>();
+            this.securityChecker = ResolveViaDependencyController<TSecurityCheckInterface>();
+            this.actionFactory = ResolveViaDependencyController<TActionGeneratorInterface>();
         }
 
         protected T ResolveViaDependencyController<T>()
