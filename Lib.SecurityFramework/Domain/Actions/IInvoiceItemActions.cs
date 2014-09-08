@@ -1,3 +1,5 @@
+using System;
+
 namespace Lib.SecurityFramework.Domain.Actions
 {
     public interface IInvoiceItemActions<out T> : IActions<T>

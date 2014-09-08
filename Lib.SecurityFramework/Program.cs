@@ -35,12 +35,16 @@ namespace Lib.SecurityFramework
                 Invoice invoice = new Invoice { CompanyID = 1, InvoiceID = 1, Status = InvoiceStatus.Draft };
                 InvoiceItem invoiceItem = new InvoiceItem { InvoiceID = 1, InvoiceItemID = 1 };
 
-                placeholder.With<HtmlFormat>().ForInvoice(context, invoice, a => a.Create).RenderAsButton("Add new invoice").WriteLine();
-                placeholder.With<HtmlFormat>().ForInvoice(context, invoice, a => a.Delete).RenderAsButton("Delete invoice").WriteLine();
-                placeholder.With<HtmlFormat>().ForInvoice(context, invoice, a => a.Publish).RenderAsButton("Publish invoice").WriteLine();
+                var invoiceActions = placeholder.With<HtmlFormat>().ForInvoice(context, invoice);
 
-                placeholder.With<HtmlFormat>().ForInvoiceItem(context, invoiceItem, a => a.RemoveVAT).RenderAsImage("minus.png").WriteLine();
-                placeholder.With<HtmlFormat>().ForInvoiceItem(context, invoiceItem, a => a.SetPrice).RenderAsImage("dollar.png").WriteLine();
+                invoiceActions(a => a.Create).RenderAsButton("Add new invoice").WriteLine();
+                invoiceActions(a => a.Delete).RenderAsButton("Delete invoice").WriteLine();
+                invoiceActions(a => a.Publish).RenderAsButton("Publish invoice").WriteLine();
+
+                var invoiceItemActions = placeholder.With<HtmlFormat>().ForInvoiceItem(context, invoiceItem);
+
+                invoiceItemActions(a => a.RemoveVAT).RenderAsImage("minus.png").WriteLine();
+                invoiceItemActions(a => a.SetPrice).RenderAsImage("dollar.png").WriteLine();
             }
         }
     }

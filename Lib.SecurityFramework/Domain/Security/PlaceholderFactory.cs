@@ -5,7 +5,7 @@ using Lib.SecurityFramework.Framework;
 
 namespace Lib.SecurityFramework.Domain.Security
 {
-    public class PlaceholderFactory<TFormat> : BasePlaceholderFactory<TFormat>
+    public class PlaceholderFactory<TFormat>
         where TFormat : class, IActionFormat
     {
         private readonly ILifetimeScope scope;
@@ -15,45 +15,33 @@ namespace Lib.SecurityFramework.Domain.Security
             this.scope = scope;
         }
 
-        protected override T ResolveViaDependencyController<T>()
+        public Func<Func<IInvoiceActions<object>, Func<object>>, TFormat> ForInvoice(IContext context, Invoice invoice)
         {
-            return this.scope.Resolve<T>();
+            var placeholderForActions = new PlaceholderForActions<TFormat,
+                IInvoiceActions<SecurityCheckResult>,
+                IInvoiceActions<TFormat>,
+                IInvoiceActions<object>>(scope, i =>
+                {
+                    i.Context = context;
+                    i.Invoice = invoice;
+                });
+
+            return placeholderForActions.Select;
         }
 
-        public TFormat ForInvoice(IContext context, Invoice invoice,
-            Func<IInvoiceActions<object>, Func<object>> actionSelector)
+        public Func<Func<IInvoiceItemActions<object>, Func<object>>, TFormat> ForInvoiceItem(IContext context, InvoiceItem item)
         {
-            var securityChecker = ResolveViaDependencyController<IInvoiceActions<SecurityCheckResult>>();
-            securityChecker.Context = context;
-            securityChecker.Invoice = invoice;
+            var placeholderForActions = new PlaceholderForActions<TFormat, 
+                IInvoiceItemActions<SecurityCheckResult>,
+                IInvoiceItemActions<TFormat>,
+                IInvoiceItemActions<object>>(scope, i =>
+                {
+                    i.Context = context;
+                    i.Invoice = new Invoice { CompanyID = context.CompanyID, InvoiceID = item.InvoiceID, Status = InvoiceStatus.Draft };
+                    i.Item = item;
+                });
 
-            var actionFactory = ResolveViaDependencyController<IInvoiceActions<TFormat>>();
-            actionFactory.Context = context;
-            actionFactory.Invoice = invoice;
-
-            return CheckSecurityAndReturnAction(
-                securityChecker,
-                actionFactory,
-                actionSelector);
-        }
-
-        public TFormat ForInvoiceItem(IContext context, InvoiceItem item,
-            Func<IInvoiceItemActions<object>, Func<object>> actionSelector)
-        {
-            var securityChecker = ResolveViaDependencyController<IInvoiceItemActions<SecurityCheckResult>>();
-            securityChecker.Context = context;
-            securityChecker.Invoice = new Invoice { InvoiceID = item.InvoiceID };
-            securityChecker.Item = item;
-
-            var actionFactory = ResolveViaDependencyController<IInvoiceItemActions<TFormat>>();
-            securityChecker.Context = context;
-            securityChecker.Invoice = new Invoice { InvoiceID = item.InvoiceID };
-            securityChecker.Item = item;
-
-            return CheckSecurityAndReturnAction(
-                securityChecker,
-                actionFactory,
-                actionSelector);
+            return placeholderForActions.Select;
         }
     }
 }
