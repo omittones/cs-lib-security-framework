@@ -16,17 +16,17 @@ namespace Lib.SecurityFramework.Domain.Security
 
         protected SecurityCheckResult Ok()
         {
-            return Result(true);
+            return SecurityCheckResult.Ok;
         }
 
         protected SecurityCheckResult Result(bool result)
         {
-            return new SecurityCheckResult(result);
+            return result ? Ok() : Fail();
         }
 
         protected SecurityCheckResult Fail()
         {
-            return Result(false);
+            return SecurityCheckResult.Fail;
         }
 
         public virtual SecurityCheckResult Create()
