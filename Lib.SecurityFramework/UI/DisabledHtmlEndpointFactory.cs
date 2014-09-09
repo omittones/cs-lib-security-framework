@@ -2,9 +2,9 @@ using Lib.SecurityFramework.Framework;
 
 namespace Lib.SecurityFramework.UI
 {
-    public class ForbiddenHtmlActionFactory : IForbiddenActionFactory<HtmlFormat>
+    public class DisabledHtmlEndpointFactory : IDisabledEndpointFactory<HtmlFormat>
     {
-        private class ForbiddenHtmlFormat : HtmlFormat
+        private class DisabledHtmlFormat : HtmlFormat
         {
             public override string RenderAsImage(string src)
             {
@@ -19,7 +19,7 @@ namespace Lib.SecurityFramework.UI
 
         public HtmlFormat Create()
         {
-            return new ForbiddenHtmlFormat();
+            return new DisabledHtmlFormat();
         }
     }
 }

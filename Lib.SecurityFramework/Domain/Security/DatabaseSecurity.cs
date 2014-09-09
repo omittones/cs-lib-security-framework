@@ -3,13 +3,13 @@ using Lib.SecurityFramework.Framework;
 using Lib.SecurityFramework.Domain.Actions;
 namespace Lib.SecurityFramework.Domain.Security
 {
-    public class DatabaseUserPermissionsChecker : IActions<SecurityCheckResult>
+    public class DatabaseSecurity : IActions<SecurityCheckResult>
     {
         public virtual IContext Context { get; set; }
 
         private readonly DomainObjects domainObject;
 
-        protected DatabaseUserPermissionsChecker(DomainObjects domainObject)
+        protected DatabaseSecurity(DomainObjects domainObject)
         {
             this.domainObject = domainObject;
         }

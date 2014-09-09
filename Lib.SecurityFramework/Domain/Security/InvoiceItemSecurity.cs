@@ -3,13 +3,13 @@ using Lib.SecurityFramework.Framework;
 
 namespace Lib.SecurityFramework.Domain.Security
 {
-    public class InvoiceItemSecurityChecker : DatabaseUserPermissionsChecker, IInvoiceItemActions<SecurityCheckResult>
+    public class InvoiceItemSecurity : DatabaseSecurity, IInvoiceItemActions<SecurityCheckResult>
     {
-        private readonly InvoiceSecurityChecker invoiceSecurity;
+        private readonly InvoiceSecurity invoiceSecurity;
 
-        public InvoiceItemSecurityChecker() : base(DomainObjects.InvoiceItem)
+        public InvoiceItemSecurity() : base(DomainObjects.InvoiceItem)
         {
-            this.invoiceSecurity = new InvoiceSecurityChecker();
+            this.invoiceSecurity = new InvoiceSecurity();
         }
 
         public Invoice Invoice

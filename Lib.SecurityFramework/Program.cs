@@ -20,31 +20,44 @@ namespace Lib.SecurityFramework
         public static void Main()
         {
             ContainerBuilder builder = new ContainerBuilder();
-            builder.RegisterType<UI.ForbiddenHtmlActionFactory>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterType<UI.DisabledHtmlEndpointFactory>().AsImplementedInterfaces().InstancePerLifetimeScope();
             builder.RegisterType<UI.InvoiceHtmlActions>().AsImplementedInterfaces().InstancePerLifetimeScope();
             builder.RegisterType<UI.InvoiceItemHtmlActions>().AsImplementedInterfaces().InstancePerLifetimeScope();
-            builder.RegisterType<Domain.Security.InvoiceSecurityChecker>().AsImplementedInterfaces().InstancePerLifetimeScope();
-            builder.RegisterType<Domain.Security.InvoiceItemSecurityChecker>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterType<Domain.Security.InvoiceSecurity>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterType<Domain.Security.InvoiceItemSecurity>().AsImplementedInterfaces().InstancePerLifetimeScope();
 
             using (var container = builder.Build())
             using (var scope = container.BeginLifetimeScope())
             {
-                var placeholders = new PlaceholderFactory(scope);
-
                 IContext context = new FakeContext();
                 Invoice invoice = new Invoice { CompanyID = 1, InvoiceID = 1, Status = InvoiceStatus.Draft };
                 InvoiceItem invoiceItem = new InvoiceItem { InvoiceID = 1, InvoiceItemID = 1 };
 
-                var invoiceAction = placeholders.With<HtmlFormat>().ForInvoice(context, invoice);
+                int count = 0;
+                var start = DateTime.UtcNow;
+                while (DateTime.UtcNow.Subtract(start).TotalSeconds < 2)
+                {
+                    for (int i = 0; i < 10000; i++)
+                    {
+                        var placeholders = new InvoicingEndpointFactory<HtmlFormat>(scope);
 
-                invoiceAction(a => a.Create).RenderAsButton("Add new invoice").WriteLine();
-                invoiceAction(a => a.Delete).RenderAsButton("Delete invoice").WriteLine();
-                invoiceAction(a => a.Publish).RenderAsButton("Publish invoice").WriteLine();
+                        var forInvoice = placeholders.ForInvoice(context, invoice);
+                        forInvoice.Action(a => a.Create).RenderAsButton("Add new invoice");
+                        forInvoice.Action(a => a.Delete).RenderAsButton("Delete invoice");
+                        forInvoice.Action(a => a.Publish).RenderAsButton("Publish invoice");
 
-                var invoiceItemAction = placeholders.With<HtmlFormat>().ForInvoiceItem(context, invoiceItem);
+                        var forInvoiceItem = placeholders.ForInvoiceItem(context, invoiceItem);
+                        forInvoiceItem.Action(a => a.RemoveVAT).RenderAsImage("minus.png");
+                        forInvoiceItem.Action(a => a.SetPrice).RenderAsImage("dollar.png");
 
-                invoiceItemAction(a => a.RemoveVAT).RenderAsImage("minus.png").WriteLine();
-                invoiceItemAction(a => a.SetPrice).RenderAsImage("dollar.png").WriteLine();
+                        count++;
+                    }
+                }
+                var end = DateTime.UtcNow;
+                var passesPerSecond = count / end.Subtract(start).TotalSeconds;
+                
+                //Last time: 170000
+                Console.WriteLine(passesPerSecond.ToString("0.00"));
             }
         }
     }

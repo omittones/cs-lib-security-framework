@@ -3,11 +3,11 @@ using Lib.SecurityFramework.Framework;
 
 namespace Lib.SecurityFramework.Domain.Security
 {
-    public class InvoiceSecurityChecker : DatabaseUserPermissionsChecker, IInvoiceActions<SecurityCheckResult>
+    public class InvoiceSecurity : DatabaseSecurity, IInvoiceActions<SecurityCheckResult>
     {
         public Invoice Invoice { get; set; }
 
-        public InvoiceSecurityChecker()
+        public InvoiceSecurity()
             : base(DomainObjects.Invoice)
         {
         }
