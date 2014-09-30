@@ -2,7 +2,7 @@ using Lib.SecurityFramework.Framework;
 
 namespace Lib.SecurityFramework.UI
 {
-    public class HtmlFormat : IActionFormat
+    public class MvcEndpoint : IActionFormat
     {
         public string Controller { get; set; }
         public string Action { get; set; }

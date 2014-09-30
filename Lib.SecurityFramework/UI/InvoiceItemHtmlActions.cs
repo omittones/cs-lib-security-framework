@@ -2,15 +2,15 @@ using Lib.SecurityFramework.Domain;
 
 namespace Lib.SecurityFramework.UI
 {
-    public class InvoiceItemHtmlActions : Domain.Actions.IInvoiceItemActions<HtmlFormat>
+    public class InvoiceItemHtmlActions : Domain.Actions.IInvoiceItemActions<MvcEndpoint>
     {
         public IContext Context { get; set; }
         public Invoice Invoice { get; set; }
         public InvoiceItem Item { get; set; }
 
-        public HtmlFormat Create()
+        public MvcEndpoint Create()
         {
-            return new HtmlFormat
+            return new MvcEndpoint
             {
                 Controller = "InvoiceItem",
                 Action = "Upsert",
@@ -18,9 +18,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public HtmlFormat Read()
+        public MvcEndpoint Read()
         {
-            return new HtmlFormat
+            return new MvcEndpoint
             {
                 Controller = "InvoiceItem",
                 Action = "Read",
@@ -28,9 +28,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public HtmlFormat Update()
+        public MvcEndpoint Update()
         {
-            return new HtmlFormat
+            return new MvcEndpoint
             {
                 Controller = "InvoiceItem",
                 Action = "Upsert",
@@ -38,9 +38,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public HtmlFormat Delete()
+        public MvcEndpoint Delete()
         {
-            return new HtmlFormat
+            return new MvcEndpoint
             {
                 Controller = "InvoiceItem",
                 Action = "Delete",
@@ -48,9 +48,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public HtmlFormat SetPrice()
+        public MvcEndpoint SetPrice()
         {
-            return new HtmlFormat
+            return new MvcEndpoint
             {
                 Controller = "InvoiceItem",
                 Action = "SetPrice",
@@ -58,9 +58,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public HtmlFormat RemoveVAT()
+        public MvcEndpoint RemoveVAT()
         {
-            return new HtmlFormat
+            return new MvcEndpoint
             {
                 Controller = "InvoiceItem",
                 Action = "RemoveVAT",

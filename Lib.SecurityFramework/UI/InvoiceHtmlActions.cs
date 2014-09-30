@@ -4,7 +4,7 @@ using Lib.SecurityFramework.Domain.Security;
 
 namespace Lib.SecurityFramework.UI
 {
-    public class InvoiceHtmlActions : IInvoiceActions<HtmlFormat>
+    public class InvoiceHtmlActions : IInvoiceActions<MvcEndpoint>
     {
         public IContext Context { get; set; }
 
@@ -15,9 +15,9 @@ namespace Lib.SecurityFramework.UI
             get { return Invoice.InvoiceID; }
         }
 
-        public HtmlFormat Create()
+        public MvcEndpoint Create()
         {
-            return new HtmlFormat
+            return new MvcEndpoint
             {
                 Controller = "Invoice",
                 Action = "HtmlUpsert",
@@ -25,9 +25,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public HtmlFormat Read()
+        public MvcEndpoint Read()
         {
-            return new HtmlFormat
+            return new MvcEndpoint
             {
                 Controller = "Invoice",
                 Action = "HtmlGet",
@@ -35,9 +35,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public HtmlFormat Update()
+        public MvcEndpoint Update()
         {
-            return new HtmlFormat
+            return new MvcEndpoint
             {
                 Controller = "Invoice",
                 Action = "HtmlUpsert",
@@ -45,9 +45,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public HtmlFormat Delete()
+        public MvcEndpoint Delete()
         {
-            return new HtmlFormat
+            return new MvcEndpoint
             {
                 Controller = "Invoice",
                 Action = "HtmlDelete",
@@ -55,9 +55,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public HtmlFormat Publish()
+        public MvcEndpoint Publish()
         {
-            return new HtmlFormat
+            return new MvcEndpoint
             {
                 Controller = "Invoice",
                 Action = "HtmlPublish",
@@ -65,9 +65,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public HtmlFormat Unpublish()
+        public MvcEndpoint Unpublish()
         {
-            return new HtmlFormat
+            return new MvcEndpoint
             {
                 Controller = "Invoice",
                 Action = "HtmlUnpublish",
@@ -75,9 +75,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public HtmlFormat Send()
+        public MvcEndpoint Send()
         {
-            return new HtmlFormat
+            return new MvcEndpoint
             {
                 Controller = "Invoice",
                 Action = "HtmlSend",
@@ -85,9 +85,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public HtmlFormat Cancel()
+        public MvcEndpoint Cancel()
         {
-            return new HtmlFormat
+            return new MvcEndpoint
             {
                 Controller = "Invoice",
                 Action = "HtmlCancel",

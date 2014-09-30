@@ -7,14 +7,19 @@ using Lib.SecurityFramework.Domain;
 using Lib.SecurityFramework.Framework;
 using Autofac;
 using Lib.SecurityFramework.UI;
+using Should;
 
 namespace Lib.SecurityFramework
 {
     public static class Program
     {
-        public static void WriteLine(this string format, params object[] args)
+        public static string WriteLine(this string format, params object[] args)
         {
-            Console.WriteLine(format, args);
+            string result = string.Format(format, args);
+
+            Console.WriteLine(result);
+
+            return result;
         }
 
         public static void Main()
@@ -33,13 +38,44 @@ namespace Lib.SecurityFramework
                 Invoice invoice = new Invoice { CompanyID = 1, InvoiceID = 1, Status = InvoiceStatus.Draft };
                 InvoiceItem invoiceItem = new InvoiceItem { InvoiceID = 1, InvoiceItemID = 1 };
 
+                var placeholders = new InvoicingEndpointFactory<MvcEndpoint>(scope);
+
+                try
+                {
+                    const string disabledClass = "class=\"disabled";
+
+                    var forInvoice = placeholders.ForInvoice(context, invoice);
+                    forInvoice.Action(a => a.Create).RenderAsButton("Add new invoice")
+                        .WriteLine()
+                        .ShouldContain(disabledClass);
+                    forInvoice.Action(a => a.Delete).RenderAsButton("Delete invoice")
+                        .WriteLine()
+                        .ShouldContain(disabledClass);
+                    forInvoice.Action(a => a.Publish).RenderAsButton("Publish invoice")
+                        .WriteLine()
+                        .ShouldNotContain(disabledClass);
+
+                    var forInvoiceItem = placeholders.ForInvoiceItem(context, invoiceItem);
+                    forInvoiceItem.Action(a => a.RemoveVAT).RenderAsImage("minus.png")
+                        .WriteLine()
+                        .ShouldNotContain(disabledClass);
+                    forInvoiceItem.Action(a => a.SetPrice).RenderAsImage("dollar.png")
+                        .WriteLine()
+                        .ShouldNotContain(disabledClass);
+                }
+                catch (Exception ex)
+                {
+                    ex.Message.WriteLine();
+                    return;
+                }
+
                 int count = 0;
                 var start = DateTime.UtcNow;
                 while (DateTime.UtcNow.Subtract(start).TotalSeconds < 2)
                 {
                     for (int i = 0; i < 10000; i++)
                     {
-                        var placeholders = new InvoicingEndpointFactory<HtmlFormat>(scope);
+                        placeholders = new InvoicingEndpointFactory<MvcEndpoint>(scope);
 
                         var forInvoice = placeholders.ForInvoice(context, invoice);
                         forInvoice.Action(a => a.Create).RenderAsButton("Add new invoice");
