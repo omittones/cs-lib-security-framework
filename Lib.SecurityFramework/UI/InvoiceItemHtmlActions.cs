@@ -1,16 +1,17 @@
 using Lib.SecurityFramework.Domain;
+using Lib.SecurityFramework.Domain.Actions;
 
 namespace Lib.SecurityFramework.UI
 {
-    public class InvoiceItemHtmlActions : Domain.Actions.IInvoiceItemActions<MvcEndpoint>
+    public class InvoiceItemHtmlActions : IInvoiceItemActions<HtmlEndpoint>
     {
         public IContext Context { get; set; }
         public Invoice Invoice { get; set; }
         public InvoiceItem Item { get; set; }
 
-        public MvcEndpoint Create()
+        public HtmlEndpoint Create()
         {
-            return new MvcEndpoint
+            return new HtmlEndpoint
             {
                 Controller = "InvoiceItem",
                 Action = "Upsert",
@@ -18,9 +19,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public MvcEndpoint Read()
+        public HtmlEndpoint Read()
         {
-            return new MvcEndpoint
+            return new HtmlEndpoint
             {
                 Controller = "InvoiceItem",
                 Action = "Read",
@@ -28,9 +29,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public MvcEndpoint Update()
+        public HtmlEndpoint Update()
         {
-            return new MvcEndpoint
+            return new HtmlEndpoint
             {
                 Controller = "InvoiceItem",
                 Action = "Upsert",
@@ -38,9 +39,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public MvcEndpoint Delete()
+        public HtmlEndpoint Delete()
         {
-            return new MvcEndpoint
+            return new HtmlEndpoint
             {
                 Controller = "InvoiceItem",
                 Action = "Delete",
@@ -48,9 +49,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public MvcEndpoint SetPrice()
+        public HtmlEndpoint SetPrice()
         {
-            return new MvcEndpoint
+            return new HtmlEndpoint
             {
                 Controller = "InvoiceItem",
                 Action = "SetPrice",
@@ -58,9 +59,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public MvcEndpoint RemoveVAT()
+        public HtmlEndpoint RemoveVAT()
         {
-            return new MvcEndpoint
+            return new HtmlEndpoint
             {
                 Controller = "InvoiceItem",
                 Action = "RemoveVAT",

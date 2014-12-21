@@ -1,10 +1,9 @@
 using Lib.SecurityFramework.Domain;
 using Lib.SecurityFramework.Domain.Actions;
-using Lib.SecurityFramework.Domain.Security;
 
 namespace Lib.SecurityFramework.UI
 {
-    public class InvoiceHtmlActions : IInvoiceActions<MvcEndpoint>
+    public class InvoiceHtmlActions : IInvoiceActions<HtmlEndpoint>
     {
         public IContext Context { get; set; }
 
@@ -15,9 +14,9 @@ namespace Lib.SecurityFramework.UI
             get { return Invoice.InvoiceID; }
         }
 
-        public MvcEndpoint Create()
+        public HtmlEndpoint Create()
         {
-            return new MvcEndpoint
+            return new HtmlEndpoint
             {
                 Controller = "Invoice",
                 Action = "HtmlUpsert",
@@ -25,9 +24,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public MvcEndpoint Read()
+        public HtmlEndpoint Read()
         {
-            return new MvcEndpoint
+            return new HtmlEndpoint
             {
                 Controller = "Invoice",
                 Action = "HtmlGet",
@@ -35,9 +34,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public MvcEndpoint Update()
+        public HtmlEndpoint Update()
         {
-            return new MvcEndpoint
+            return new HtmlEndpoint
             {
                 Controller = "Invoice",
                 Action = "HtmlUpsert",
@@ -45,9 +44,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public MvcEndpoint Delete()
+        public HtmlEndpoint Delete()
         {
-            return new MvcEndpoint
+            return new HtmlEndpoint
             {
                 Controller = "Invoice",
                 Action = "HtmlDelete",
@@ -55,9 +54,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public MvcEndpoint Publish()
+        public HtmlEndpoint Publish()
         {
-            return new MvcEndpoint
+            return new HtmlEndpoint
             {
                 Controller = "Invoice",
                 Action = "HtmlPublish",
@@ -65,9 +64,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public MvcEndpoint Unpublish()
+        public HtmlEndpoint Unpublish()
         {
-            return new MvcEndpoint
+            return new HtmlEndpoint
             {
                 Controller = "Invoice",
                 Action = "HtmlUnpublish",
@@ -75,9 +74,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public MvcEndpoint Send()
+        public HtmlEndpoint Send()
         {
-            return new MvcEndpoint
+            return new HtmlEndpoint
             {
                 Controller = "Invoice",
                 Action = "HtmlSend",
@@ -85,9 +84,9 @@ namespace Lib.SecurityFramework.UI
             };
         }
 
-        public MvcEndpoint Cancel()
+        public HtmlEndpoint Cancel()
         {
-            return new MvcEndpoint
+            return new HtmlEndpoint
             {
                 Controller = "Invoice",
                 Action = "HtmlCancel",

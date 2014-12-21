@@ -1,18 +1,14 @@
 using System;
-using Autofac;
-using Lib.SecurityFramework.Domain.Security;
 
 namespace Lib.SecurityFramework.Framework
 {
     public class ActionEndpointFactory<TFormat>
     {
-        private readonly ILifetimeScope scope;
         private readonly IDisabledEndpointFactory<TFormat> disabledEndpointFactory;
 
-        public ActionEndpointFactory(ILifetimeScope scope)
+        public ActionEndpointFactory(IDisabledEndpointFactory<TFormat> disabledEndpointFactory)
         {
-            this.scope = scope;
-            this.disabledEndpointFactory = scope.Resolve<IDisabledEndpointFactory<TFormat>>();
+            this.disabledEndpointFactory = disabledEndpointFactory;
         }
 
         public ActionSelector<TFormat, TCommonInterface> CreateActionSelector<TCommonInterface>(

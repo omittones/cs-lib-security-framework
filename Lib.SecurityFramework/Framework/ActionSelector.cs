@@ -1,5 +1,4 @@
 using System;
-using Autofac;
 
 namespace Lib.SecurityFramework.Framework
 {
@@ -7,19 +6,19 @@ namespace Lib.SecurityFramework.Framework
     {
         private readonly Action<TCommonInterface> initalize;
         private readonly TCommonInterface securityChecker;
-        private readonly TCommonInterface actionResultFactory;
+        private readonly TCommonInterface endpointFactory;
         private readonly IDisabledEndpointFactory<TFormat> disabledEndpointFactory;
 
         public ActionSelector(
             IDisabledEndpointFactory<TFormat> disabledEndpointFactory,
             TCommonInterface securityChecker,
-            TCommonInterface actionResultFactory,
+            TCommonInterface endpointFactory,
             Action<TCommonInterface> initialize)
         {
             this.initalize = initialize;
             this.disabledEndpointFactory = disabledEndpointFactory;
             this.securityChecker = securityChecker;
-            this.actionResultFactory = actionResultFactory;
+            this.endpointFactory = endpointFactory;
         }
 
         public bool IsActionAllowed(Func<TCommonInterface, Func<object>> methodSelector)
@@ -33,14 +32,12 @@ namespace Lib.SecurityFramework.Framework
         {
             if (IsActionAllowed(methodSelector))
             {
-                this.initalize(this.actionResultFactory);
-                var generateActionInvocation = methodSelector(this.actionResultFactory);
+                this.initalize(this.endpointFactory);
+                var generateActionInvocation = methodSelector(this.endpointFactory);
                 return (TFormat) generateActionInvocation();
             }
-            else
-            {
-                return disabledEndpointFactory.Create();
-            }
+
+            return disabledEndpointFactory.Create();
         }
     }
 }

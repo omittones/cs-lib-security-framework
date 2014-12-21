@@ -1,4 +1,3 @@
-using System;
 using Autofac;
 using Lib.SecurityFramework.Domain;
 using Lib.SecurityFramework.Domain.Actions;
@@ -8,12 +7,18 @@ using Lib.SecurityFramework.Framework;
 namespace Lib.SecurityFramework.UI
 {
     public class InvoicingEndpointFactory<TFormat> : ActionEndpointFactory<TFormat>
-        where TFormat : class, IActionFormat
+        where TFormat : class
     {
         private readonly ILifetimeScope scope;
-        public InvoicingEndpointFactory(ILifetimeScope scope) : base(scope)
+        private readonly IInvoiceRepository repo;
+
+        public InvoicingEndpointFactory(IDisabledEndpointFactory<TFormat> disabledEndpointFactory, 
+            IInvoiceRepository repo,
+            ILifetimeScope scope)
+            : base(disabledEndpointFactory)
         {
             this.scope = scope;
+            this.repo = repo;
         }
 
         public ActionSelector<TFormat, IInvoiceActions<object>> ForInvoice(IContext context, Invoice invoice)
@@ -30,13 +35,15 @@ namespace Lib.SecurityFramework.UI
 
         public ActionSelector<TFormat, IInvoiceItemActions<object>> ForInvoiceItem(IContext context, InvoiceItem item)
         {
+            var invoce = repo.GetInvoice(item.InvoiceID);
+
             return CreateActionSelector<IInvoiceItemActions<object>>(
                 scope.Resolve<IInvoiceItemActions<TFormat>>(),
                 new InvoiceItemSecurity(),
                 i =>
                 {
                     i.Context = context;
-                    i.Invoice = new Invoice { CompanyID = context.CompanyID, InvoiceID = item.InvoiceID, Status = InvoiceStatus.Draft };
+                    i.Invoice = invoce;
                     i.Item = item;
                 });
         }

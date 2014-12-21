@@ -1,8 +1,6 @@
-using Lib.SecurityFramework.Framework;
-
 namespace Lib.SecurityFramework.UI
 {
-    public class MvcEndpoint : IActionFormat
+    public class HtmlEndpoint
     {
         public string Controller { get; set; }
         public string Action { get; set; }

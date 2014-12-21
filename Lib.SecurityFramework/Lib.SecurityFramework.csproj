@@ -48,29 +48,29 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Domain\Security\InvoiceItemSecurity.cs" />
-    <Compile Include="Framework\ActionSelector.cs" />
     <Compile Include="Domain\Security\CRUD.cs" />
     <Compile Include="Domain\Security\DomainObjects.cs" />
-    <Compile Include="Framework\IActionFormat.cs" />
+    <Compile Include="Framework\ActionEndpointFactory.cs" />
+    <Compile Include="Framework\ActionSelector.cs" />
+    <Compile Include="Framework\SecurityCheckResult.cs" />
     <Compile Include="Domain\Actions\IActions.cs" />
     <Compile Include="Domain\IContext.cs" />
-    <Compile Include="Framework\IDisabledEndpointFactory.cs" />
     <Compile Include="Domain\Actions\IInvoiceActions.cs" />
     <Compile Include="Domain\Actions\IInvoiceItemActions.cs" />
-    <Compile Include="UI\InvoicingEndpointFactory.cs" />
-    <Compile Include="UI\InvoiceItemHtmlActions.cs" />
-    <Compile Include="UI\MvcEndpoint.cs" />
     <Compile Include="Domain\Invoice.cs" />
+    <Compile Include="Framework\IDisabledEndpointFactory.cs" />
     <Compile Include="UI\DisabledHtmlEndpointFactory.cs" />
-    <Compile Include="UI\InvoiceHtmlActions.cs" />
+    <Compile Include="UI\IInvoiceRepository.cs" />
+    <Compile Include="UI\HtmlEndpoint.cs" />
     <Compile Include="Domain\InvoiceItem.cs" />
     <Compile Include="Domain\Security\InvoiceSecurity.cs" />
     <Compile Include="Domain\InvoiceStatus.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Framework\ActionEndpointFactory.cs" />
-    <Compile Include="Framework\SecurityCheckResult.cs" />
     <Compile Include="Domain\Security\DatabaseSecurity.cs" />
+    <Compile Include="UI\InvoiceHtmlActions.cs" />
+    <Compile Include="UI\InvoiceItemHtmlActions.cs" />
+    <Compile Include="UI\InvoicingEndpointFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

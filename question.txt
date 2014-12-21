@@ -1,0 +1,486 @@
+I needed a nice typesafe way to implement security checks for various domain objects and actions that can be performed on them.
+
+I had an idea how to do it, so I implemented it as a simple proof of concept.
+
+The core is the `ActionSelector<,>` class that receives two objects, `securityChecker` that checks for security, and `endpointFactory` which is used to create real endpoint for action.
+Both `securityChecker` and `endpointFactory` implement generic interface which defines a list of possible actions.
+`securityChecker` implementation specifies `T` as `SecurityCheckResult` and  `endpointFactory` specifies `T` as `HtmlEndpoint`.
+ActionSelector takes in same generic interface, but with `T` as an object. If the `securityChecker` passes, the result from `endpointFactory` is returned. If it does not pass, it uses `disabledEndpointFactory` to return disabled endpoint representation.
+
+    public class ActionSelector<TFormat, TCommonInterface>
+    {
+        private readonly Action<TCommonInterface> initalize;
+        private readonly TCommonInterface securityChecker;
+        private readonly TCommonInterface endpointFactory;
+        private readonly IDisabledEndpointFactory<TFormat> disabledEndpointFactory;
+
+        public ActionSelector(
+            IDisabledEndpointFactory<TFormat> disabledEndpointFactory,
+            TCommonInterface securityChecker,
+            TCommonInterface endpointFactory,
+            Action<TCommonInterface> initialize)
+        {
+            this.initalize = initialize;
+            this.disabledEndpointFactory = disabledEndpointFactory;
+            this.securityChecker = securityChecker;
+            this.endpointFactory = endpointFactory;
+        }
+
+        public bool IsActionAllowed(Func<TCommonInterface, Func<object>> methodSelector)
+        {
+            this.initalize(securityChecker);
+            var performSecurityCheck = methodSelector(securityChecker);
+            return ((SecurityCheckResult) performSecurityCheck()).Allowed;
+        }
+
+        public TFormat Action(Func<TCommonInterface, Func<object>> methodSelector)
+        {
+            if (IsActionAllowed(methodSelector))
+            {
+                this.initalize(this.endpointFactory);
+                var generateActionInvocation = methodSelector(this.endpointFactory);
+                return (TFormat) generateActionInvocation();
+            }
+            else
+            {
+                return disabledEndpointFactory.Create();
+            }
+        }
+    }
+
+    public interface IDisabledEndpointFactory<out T>
+    {
+        T Create();
+    }
+
+    public class SecurityCheckResult
+    {
+        public static readonly SecurityCheckResult Ok = new SecurityCheckResult(true);
+
+        public static readonly SecurityCheckResult Fail = new SecurityCheckResult(false);
+
+        public SecurityCheckResult(bool allowed)
+        {
+            this.Allowed = allowed;
+        }
+
+        public bool Allowed { get; private set; }
+    }
+
+This is a helper class that creates selectors for specific `securityChecker` and `endpointFactory` setups.
+
+    public class ActionEndpointFactory<TFormat>
+    {
+        private readonly IDisabledEndpointFactory<TFormat> disabledEndpointFactory;
+
+        public ActionEndpointFactory(IDisabledEndpointFactory<TFormat> disabledEndpointFactory)
+        {
+            this.disabledEndpointFactory = disabledEndpointFactory;
+        }
+
+        public ActionSelector<TFormat, TCommonInterface> CreateActionSelector<TCommonInterface>(
+            TCommonInterface endpointFactory,
+            TCommonInterface securityChecker,
+            Action<TCommonInterface> init)
+        {
+            return new ActionSelector<TFormat, TCommonInterface>(this.disabledEndpointFactory,
+                securityChecker, endpointFactory, init);
+        }
+    }
+
+Action interfaces are defined like this:
+
+    public interface IActions<out T>
+        where T : class
+    {
+        T Create();
+        T Read();
+        T Update();
+        T Delete();
+    }
+
+	public interface IInvoiceActions<out T> : IActions<T>
+        where T : class
+    {
+        IContext Context { get; set; }
+
+        Invoice Invoice { get; set; }
+
+        T Publish();
+
+        T Unpublish();
+
+        T Send();
+
+        T Cancel();
+    }
+
+    public interface IInvoiceItemActions<out T> : IActions<T>
+        where T : class
+    {
+        IContext Context { get; set; }
+
+        Invoice Invoice { get; set; }
+
+        InvoiceItem Item { get; set; }
+
+        T SetPrice();
+
+        T RemoveVAT();
+    }
+
+Here are the classes representing endpoints for HTML (not real implementation).
+
+    public class HtmlEndpoint
+    {
+        public string Controller { get; set; }
+        public string Action { get; set; }
+        public object RouteValues { get; set; }
+
+        public virtual string RenderAsButton(string text)
+        {
+            return "<button>" + text + "</button>";
+        }
+
+        public virtual string RenderAsImage(string src)
+        {
+            return "<img src=\"" + src + "\"/>";
+        }
+    }
+
+    public class DisabledHtmlEndpointFactory : IDisabledEndpointFactory<HtmlEndpoint>
+    {
+        private class DisabledHtmlEndpoint : HtmlEndpoint
+        {
+            public override string RenderAsImage(string src)
+            {
+                return "<img class=\"disabled\" src=\"" + src + "\" />";
+            }
+
+            public override string RenderAsButton(string text)
+            {
+                return "<span class=\"disabled button\">" + text + "</span>";
+            }
+        }
+
+        public HtmlEndpoint Create()
+        {
+            return new DisabledHtmlEndpoint();
+        }
+    }
+
+Concrete implementation of security check for Invoice and InvoiceItem entities:
+
+	public class InvoiceSecurity : DatabaseSecurity, IInvoiceActions<SecurityCheckResult>
+    {
+        public Invoice Invoice { get; set; }
+
+        public InvoiceSecurity()
+            : base(DomainObjects.Invoice)
+        {
+        }
+
+        public override SecurityCheckResult Update()
+        {
+            return Result(this.Invoice.InvoiceID >= 0 &&
+                          this.Invoice.CompanyID == Context.CompanyID &&
+                          base.Update().Allowed);
+        }
+
+        public override SecurityCheckResult Delete()
+        {
+            return Result(this.Invoice.Status == InvoiceStatus.Draft &&
+                          this.Invoice.CompanyID == Context.CompanyID &&
+                          base.Delete().Allowed);
+        }
+
+        public SecurityCheckResult Publish()
+        {
+            return Result(this.Invoice.Status == InvoiceStatus.Draft &&
+                          this.Invoice.CompanyID == Context.CompanyID &&
+                          this.Update().Allowed);
+        }
+
+        public SecurityCheckResult Unpublish()
+        {
+            return Result(this.Invoice.Status == InvoiceStatus.NotSent &&
+                          this.Invoice.CompanyID == Context.CompanyID &&
+                          this.Update().Allowed);
+        }
+
+        public SecurityCheckResult Send()
+        {
+            return Result(this.Invoice.Status == InvoiceStatus.NotSent &&
+                          this.Context.IsAdminLoggedIn() &&
+                          this.Update().Allowed);
+        }
+
+        public SecurityCheckResult Cancel()
+        {
+            return Result(this.Invoice.Status != InvoiceStatus.Paid &&
+                          this.Invoice.Status != InvoiceStatus.Cancelled &&
+                          this.Invoice.CompanyID == Context.CompanyID &&
+                          this.Context.IsAdminLoggedIn() &&
+                          this.Update().Allowed);
+        }
+    }
+
+	public class InvoiceItemSecurity : DatabaseSecurity, IInvoiceItemActions<SecurityCheckResult>
+    {
+        private readonly InvoiceSecurity invoiceSecurity;
+
+        public InvoiceItemSecurity() : base(DomainObjects.InvoiceItem)
+        {
+            this.invoiceSecurity = new InvoiceSecurity();
+        }
+
+        public Invoice Invoice
+        {
+            get { return invoiceSecurity.Invoice; }
+            set { invoiceSecurity.Invoice = value; }
+        }
+
+        public override IContext Context
+        {
+            get { return invoiceSecurity.Context; }
+            set { invoiceSecurity.Context = value; }
+        }
+
+        public InvoiceItem Item { get; set; }
+
+        public SecurityCheckResult SetPrice()
+        {
+            return invoiceSecurity.Update();
+        }
+
+        public SecurityCheckResult RemoveVAT()
+        {
+            return invoiceSecurity.Update();
+        }
+    }
+
+Concrete implementation of Html endpoints for Invoice and InvoiceItem:
+
+    public class InvoiceHtmlActions : IInvoiceActions<HtmlEndpoint>
+    {
+        public IContext Context { get; set; }
+
+        public Invoice Invoice { get; set; }
+
+        public int InvoiceID
+        {
+            get { return Invoice.InvoiceID; }
+        }
+
+        public HtmlEndpoint Create()
+        {
+            return new HtmlEndpoint
+            {
+                Controller = "Invoice",
+                Action = "Upsert",
+                RouteValues = new { parentId = Context.CompanyID }
+            };
+        }
+
+        public HtmlEndpoint Read()
+        {
+            return new HtmlEndpoint
+            {
+                Controller = "Invoice",
+                Action = "Get",
+                RouteValues = new { entityId = InvoiceID }
+            };
+        }
+
+        public HtmlEndpoint Update()
+        {
+            return new HtmlEndpoint
+            {
+                Controller = "Invoice",
+                Action = "Upsert",
+                RouteValues = new { entityId = InvoiceID }
+            };
+        }
+
+        public HtmlEndpoint Delete()
+        {
+            return new HtmlEndpoint
+            {
+                Controller = "Invoice",
+                Action = "Delete",
+                RouteValues = new { entityId = InvoiceID }
+            };
+        }
+
+        public HtmlEndpoint Publish()
+        {
+            return new HtmlEndpoint
+            {
+                Controller = "Invoice",
+                Action = "Publish",
+                RouteValues = new { entityId = InvoiceID }
+            };
+        }
+
+        public HtmlEndpoint Unpublish()
+        {
+            return new HtmlEndpoint
+            {
+                Controller = "Invoice",
+                Action = "Unpublish",
+                RouteValues = new { entityId = InvoiceID }
+            };
+        }
+
+        public HtmlEndpoint Send()
+        {
+            return new HtmlEndpoint
+            {
+                Controller = "Invoice",
+                Action = "Send",
+                RouteValues = new { entityId = InvoiceID }
+            };
+        }
+
+        public HtmlEndpoint Cancel()
+        {
+            return new HtmlEndpoint
+            {
+                Controller = "Invoice",
+                Action = "Cancel",
+                RouteValues = new { entityId = InvoiceID }
+            };
+        }
+    }
+
+    public class InvoiceItemHtmlActions : Domain.Actions.IInvoiceItemActions<HtmlEndpoint>
+    {
+        public IContext Context { get; set; }
+        public Invoice Invoice { get; set; }
+        public InvoiceItem Item { get; set; }
+
+        public HtmlEndpoint Create()
+        {
+            return new HtmlEndpoint
+            {
+                Controller = "InvoiceItem",
+                Action = "Upsert",
+                RouteValues = new { parentId = Invoice.InvoiceID }
+            };
+        }
+
+        public HtmlEndpoint Read()
+        {
+            return new HtmlEndpoint
+            {
+                Controller = "InvoiceItem",
+                Action = "Get",
+                RouteValues = new { entityId = Item.InvoiceItemID }
+            };
+        }
+
+        public HtmlEndpoint Update()
+        {
+            return new HtmlEndpoint
+            {
+                Controller = "InvoiceItem",
+                Action = "Upsert",
+                RouteValues = new { entityId = Item.InvoiceItemID }
+            };
+        }
+
+        public HtmlEndpoint Delete()
+        {
+            return new HtmlEndpoint
+            {
+                Controller = "InvoiceItem",
+                Action = "Delete",
+                RouteValues = new { entityId = Item.InvoiceItemID }
+            };
+        }
+
+        public HtmlEndpoint SetPrice()
+        {
+            return new HtmlEndpoint
+            {
+                Controller = "InvoiceItem",
+                Action = "SetPrice",
+                RouteValues = new { entityId = Item.InvoiceItemID }
+            };
+        }
+
+        public HtmlEndpoint RemoveVAT()
+        {
+            return new HtmlEndpoint
+            {
+                Controller = "InvoiceItem",
+                Action = "RemoveVAT",
+                RouteValues = new { entityId = Item.InvoiceItemID }
+            };
+        }
+    }
+
+Finally, a class implementing `ActionEndpointFactory<>` which is responsible for setting up the configurations for all the entity classes.
+
+    public class InvoicingEndpointFactory<TFormat> : ActionEndpointFactory<TFormat>
+        where TFormat : class
+    {
+        private readonly ILifetimeScope scope;
+
+        public InvoicingEndpointFactory(ILifetimeScope scope)
+            : base(scope.Resolve<IDisabledEndpointFactory<TFormat>>())
+        {
+            this.scope = scope;
+        }
+
+        public ActionSelector<TFormat, IInvoiceActions<object>> ForInvoice(IContext context, Invoice invoice)
+        {
+            return CreateActionSelector<IInvoiceActions<object>>(
+                scope.Resolve<IInvoiceActions<TFormat>>(),
+                new InvoiceSecurity(),
+                i =>
+                {
+                    i.Context = context;
+                    i.Invoice = invoice;
+                });
+        }
+
+        public ActionSelector<TFormat, IInvoiceItemActions<object>> ForInvoiceItem(IContext context, InvoiceItem item)
+        {
+            return CreateActionSelector<IInvoiceItemActions<object>>(
+                scope.Resolve<IInvoiceItemActions<TFormat>>(),
+                new InvoiceItemSecurity(),
+                i =>
+                {
+                    i.Context = context;
+                    i.Invoice = new Invoice { CompanyID = context.CompanyID, InvoiceID = item.InvoiceID, Status = InvoiceStatus.Draft };
+                    i.Item = item;
+                });
+        }
+    }
+
+And here is a snippet of code which actualy uses the framework for rendering action endpoints.
+
+    //usage example
+
+    IContext context = new FakeContext();
+    Invoice invoice = new Invoice { CompanyID = 1, InvoiceID = 1, Status = InvoiceStatus.Draft };
+    InvoiceItem invoiceItem = new InvoiceItem { InvoiceID = 1, InvoiceItemID = 1 };
+
+    var htmlEndpoint = new InvoicingEndpointFactory<HtmlEndpoint>(scope);
+
+    var forInvoice = htmlEndpoint.ForInvoice(context, invoice);
+
+    string html;
+    html = forInvoice.Action(a => a.Create).RenderAsButton("Add new invoice");
+    html = forInvoice.Action(a => a.Delete).RenderAsButton("Delete invoice");
+    html = forInvoice.Action(a => a.Publish).RenderAsButton("Publish invoice");
+
+    var forInvoiceItem = htmlEndpoint.ForInvoiceItem(context, invoiceItem);
+    html = forInvoiceItem.Action(a => a.RemoveVAT).RenderAsImage("minus.png");
+    html = forInvoiceItem.Action(a => a.SetPrice).RenderAsImage("dollar.png");
+
+
+Am I over-engineering the solution?
+
+Can you think of a use-case which cannot be covered gracefully with this approach?

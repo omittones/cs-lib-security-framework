@@ -2,9 +2,9 @@ using Lib.SecurityFramework.Framework;
 
 namespace Lib.SecurityFramework.UI
 {
-    public class DisabledHtmlEndpointFactory : IDisabledEndpointFactory<MvcEndpoint>
+    public class DisabledHtmlEndpointFactory : IDisabledEndpointFactory<HtmlEndpoint>
     {
-        private class DisabledMvcEndpoint : MvcEndpoint
+        private class DisabledHtmlEndpoint : HtmlEndpoint
         {
             public override string RenderAsImage(string src)
             {
@@ -17,9 +17,9 @@ namespace Lib.SecurityFramework.UI
             }
         }
 
-        public MvcEndpoint Create()
+        public HtmlEndpoint Create()
         {
-            return new DisabledMvcEndpoint();
+            return new DisabledHtmlEndpoint();
         }
     }
 }

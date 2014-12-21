@@ -30,6 +30,7 @@ namespace Lib.SecurityFramework
             builder.RegisterType<UI.InvoiceItemHtmlActions>().AsImplementedInterfaces().InstancePerLifetimeScope();
             builder.RegisterType<Domain.Security.InvoiceSecurity>().AsImplementedInterfaces().InstancePerLifetimeScope();
             builder.RegisterType<Domain.Security.InvoiceItemSecurity>().AsImplementedInterfaces().InstancePerLifetimeScope();
+            builder.RegisterGeneric(typeof (InvoicingEndpointFactory<>)).AsSelf().InstancePerLifetimeScope();
 
             using (var container = builder.Build())
             using (var scope = container.BeginLifetimeScope())
@@ -38,13 +39,13 @@ namespace Lib.SecurityFramework
                 Invoice invoice = new Invoice { CompanyID = 1, InvoiceID = 1, Status = InvoiceStatus.Draft };
                 InvoiceItem invoiceItem = new InvoiceItem { InvoiceID = 1, InvoiceItemID = 1 };
 
-                var placeholders = new InvoicingEndpointFactory<MvcEndpoint>(scope);
+                var htmlEndpoint = scope.Resolve<InvoicingEndpointFactory<HtmlEndpoint>>();
 
                 try
                 {
                     const string disabledClass = "class=\"disabled";
 
-                    var forInvoice = placeholders.ForInvoice(context, invoice);
+                    var forInvoice = htmlEndpoint.ForInvoice(context, invoice);
                     forInvoice.Action(a => a.Create).RenderAsButton("Add new invoice")
                         .WriteLine()
                         .ShouldContain(disabledClass);
@@ -55,7 +56,7 @@ namespace Lib.SecurityFramework
                         .WriteLine()
                         .ShouldNotContain(disabledClass);
 
-                    var forInvoiceItem = placeholders.ForInvoiceItem(context, invoiceItem);
+                    var forInvoiceItem = htmlEndpoint.ForInvoiceItem(context, invoiceItem);
                     forInvoiceItem.Action(a => a.RemoveVAT).RenderAsImage("minus.png")
                         .WriteLine()
                         .ShouldNotContain(disabledClass);
@@ -75,14 +76,14 @@ namespace Lib.SecurityFramework
                 {
                     for (int i = 0; i < 10000; i++)
                     {
-                        placeholders = new InvoicingEndpointFactory<MvcEndpoint>(scope);
+                        htmlEndpoint = scope.Resolve<InvoicingEndpointFactory<HtmlEndpoint>>();
 
-                        var forInvoice = placeholders.ForInvoice(context, invoice);
+                        var forInvoice = htmlEndpoint.ForInvoice(context, invoice);
                         forInvoice.Action(a => a.Create).RenderAsButton("Add new invoice");
                         forInvoice.Action(a => a.Delete).RenderAsButton("Delete invoice");
                         forInvoice.Action(a => a.Publish).RenderAsButton("Publish invoice");
 
-                        var forInvoiceItem = placeholders.ForInvoiceItem(context, invoiceItem);
+                        var forInvoiceItem = htmlEndpoint.ForInvoiceItem(context, invoiceItem);
                         forInvoiceItem.Action(a => a.RemoveVAT).RenderAsImage("minus.png");
                         forInvoiceItem.Action(a => a.SetPrice).RenderAsImage("dollar.png");
 

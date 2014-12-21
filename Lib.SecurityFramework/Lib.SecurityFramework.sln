@@ -5,6 +5,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lib.SecurityFramework", "Li
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{C2DA2525-F18E-4E7E-8A28-5B5D11C9ADB4}"
 	ProjectSection(SolutionItems) = preProject
+		..\question.txt = ..\question.txt
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
